@@ -9,28 +9,28 @@ import * as p from '@clack/prompts';
 import { EmailConfig, EmailProviderType } from '../types/config';
 
 /**
- * Assistant interactif guidé pour la configuration du service d'emails et SMTP.
+ * Assistant interactif guide pour la configuration du service d'emails et SMTP.
  */
 export class EmailPrompt {
   /**
-   * Pose les questions nécessaires selon le fournisseur d'email sélectionné.
+   * Pose les questions necessaires selon le fournisseur d'email selectionne.
    *
-   * @param {string} defaultFrom - Adresse d'expédition par défaut suggérée.
-   * @returns {Promise<EmailConfig>} Configuration complète du service d'emails.
+   * @param {string} defaultFrom - Adresse d'expedition par defaut suggeree.
+   * @returns {Promise<EmailConfig>} Configuration complete du service d'emails.
    */
   public static async prompt(defaultFrom: string = 'noreply@example.com'): Promise<EmailConfig> {
     const provider = (await p.select({
-      message: '📧 Quel service d\'envoi d\'emails (SMTP) souhaitez-vous utiliser ?',
+      message: 'Quel service d\'envoi d\'emails (SMTP) souhaitez-vous utiliser ?',
       options: [
         {
           value: EmailProviderType.GOOGLE,
-          label: 'Google Workspace / Gmail (Recommandé)',
-          hint: 'Utilise le SMTP Google sécurisé avec mot de passe d\'application 16 caractères',
+          label: 'Google Workspace / Gmail (Recommande)',
+          hint: 'Utilise le SMTP Google securise avec mot de passe d\'application 16 caracteres',
         },
         {
           value: EmailProviderType.OVH,
           label: 'OVH Mail / Pro',
-          hint: 'Serveur mutualisé ou dédié OVH Telecom (ssl0.ovh.net)',
+          hint: 'Serveur mutualise ou dedie OVH Telecom (ssl0.ovh.net)',
         },
         {
           value: EmailProviderType.BREVO,
@@ -40,23 +40,23 @@ export class EmailPrompt {
         {
           value: EmailProviderType.RESEND,
           label: 'Resend',
-          hint: 'Service moderne d\'emails pour développeurs',
+          hint: 'Service moderne d\'emails pour developpeurs',
         },
         {
           value: EmailProviderType.CUSTOM_SMTP,
-          label: 'Autre serveur SMTP personnalisé',
-          hint: 'Saisie manuelle des hôtes, ports et identifiants',
+          label: 'Autre serveur SMTP personnalise',
+          hint: 'Saisie manuelle des hotes, ports et identifiants',
         },
         {
           value: EmailProviderType.DISABLED,
-          label: 'Désactiver les emails pour le moment',
+          label: 'Desactiver les emails pour le moment',
           hint: 'Aucun envoi de notification par email',
         },
       ],
     })) as EmailProviderType;
 
     if (p.isCancel(provider)) {
-      p.cancel('Opération annulée par l\'utilisateur.');
+      p.cancel('Operation annulee par l\'utilisateur.');
       process.exit(0);
     }
 
@@ -72,10 +72,10 @@ export class EmailPrompt {
     if (provider === EmailProviderType.GOOGLE) {
       p.note(
         'Pour Gmail / Google Workspace :\n' +
-        '1. Rendez-vous sur votre compte Google > Sécurité > Validation en deux étapes.\n' +
-        '2. Tout en bas, créez un "Mot de passe d\'application" (16 lettres).\n' +
-        '3. Ne saisissez JAMAIS votre mot de passe personnel Gmail classique.',
-        'ℹ Instructions Google App Password'
+        '1. Rendez-vous sur votre compte Google > Securite > Validation en deux etapes.\n' +
+        '2. Tout en bas, creez un "Mot de passe d\'application" (16 lettres).\n' +
+        '3. Ne saisissez jamais votre mot de passe personnel Gmail classique.',
+        'Instructions Google App Password'
       );
 
       smtpHost = 'smtp.gmail.com';
@@ -92,8 +92,8 @@ export class EmailPrompt {
       smtpUser = user as string;
 
       const pass = await p.password({
-        message: 'Mot de passe d\'application Google (16 caractères) :',
-        mask: '•',
+        message: 'Mot de passe d\'application Google (16 caracteres) :',
+        mask: '*',
         validate: (value) => {
           if (value.trim().length === 0) return 'Le mot de passe d\'application est requis.';
         },
@@ -113,7 +113,7 @@ export class EmailPrompt {
 
       const pass = await p.password({
         message: 'Mot de passe du compte OVH :',
-        mask: '•',
+        mask: '*',
       });
       if (p.isCancel(pass)) process.exit(0);
       smtpPassword = pass as string;
@@ -129,8 +129,8 @@ export class EmailPrompt {
       smtpUser = user as string;
 
       const pass = await p.password({
-        message: 'Clé d\'API principale ou Mot de passe SMTP Brevo (Master Key) :',
-        mask: '•',
+        message: 'Cle d\'API principale ou Mot de passe SMTP Brevo (Master Key) :',
+        mask: '*',
       });
       if (p.isCancel(pass)) process.exit(0);
       smtpPassword = pass as string;
@@ -140,14 +140,14 @@ export class EmailPrompt {
       smtpUser = 'resend';
 
       const pass = await p.password({
-        message: 'Clé d\'API Resend (re_...) :',
-        mask: '•',
+        message: 'Cle d\'API Resend (re_...) :',
+        mask: '*',
       });
       if (p.isCancel(pass)) process.exit(0);
       smtpPassword = pass as string;
     } else if (provider === EmailProviderType.CUSTOM_SMTP) {
       const host = await p.text({
-        message: 'Hôte du serveur SMTP :',
+        message: 'Hote du serveur SMTP :',
         placeholder: 'mail.mondomaine.com',
       });
       if (p.isCancel(host)) process.exit(0);
@@ -169,21 +169,21 @@ export class EmailPrompt {
 
       const pass = await p.password({
         message: 'Mot de passe SMTP :',
-        mask: '•',
+        mask: '*',
       });
       if (p.isCancel(pass)) process.exit(0);
       smtpPassword = pass as string;
     }
 
     const from = await p.text({
-      message: 'Nom et adresse d\'expédition affichés (Header From) :',
+      message: 'Nom et adresse d\'expedition affiches (Header From) :',
       initialValue: defaultFrom,
       placeholder: '"Mon Application" <contact@mondomaine.com>',
     });
     if (p.isCancel(from)) process.exit(0);
 
     const ownerEmail = await p.text({
-      message: 'Adresse email de l\'administrateur recevant les alertes système :',
+      message: 'Adresse email de l\'administrateur recevant les alertes systeme :',
       initialValue: smtpUser || 'admin@votre-domaine.com',
     });
     if (p.isCancel(ownerEmail)) process.exit(0);

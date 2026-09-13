@@ -1,5 +1,5 @@
 /**
- * @fileoverview Commande 'restore' pour restaurer un dump SQL compressé dans la base de données.
+ * @fileoverview Commande 'restore' pour restaurer un dump SQL compresse dans la base de donnees.
  * @module commands/restore
  * @author AMBO Tech
  * @license MIT
@@ -10,15 +10,15 @@ import { Logger } from '../utils/logger';
 import * as fs from 'fs';
 
 /**
- * Gestionnaire pour restaurer une sauvegarde de base de données.
+ * Gestionnaire pour restaurer une sauvegarde de base de donnees.
  */
 export class RestoreCommand {
   /**
    * Restaure un fichier de dump .sql.gz dans le conteneur PostgreSQL actif.
    *
-   * @param {string} dumpFilePath - Chemin absolu vers le fichier de dump compressé.
+   * @param {string} dumpFilePath - Chemin absolu vers le fichier de dump compresse.
    * @param {string} [containerName='afd_postgres_prod'] - Nom du conteneur PostgreSQL.
-   * @param {string} [dbName='afd_textile_prod'] - Nom de la base de données.
+   * @param {string} [dbName='afd_textile_prod'] - Nom de la base de donnees.
    * @param {string} [dbUser='afd_admin'] - Nom de l'utilisateur administrateur.
    * @returns {Promise<void>}
    */
@@ -29,10 +29,10 @@ export class RestoreCommand {
     dbUser: string = 'afd_admin'
   ): Promise<void> {
     Logger.banner();
-    Logger.section('♻️ Restauration de Base de Données PostgreSQL');
+    Logger.section('Restauration de Base de Donnees PostgreSQL');
 
     if (!fs.existsSync(dumpFilePath)) {
-      Logger.error(`Le fichier de sauvegarde spécifié est introuvable : ${dumpFilePath}`);
+      Logger.error(`Le fichier de sauvegarde specifie est introuvable : ${dumpFilePath}`);
       return;
     }
 
@@ -43,7 +43,7 @@ export class RestoreCommand {
     const res = await Shell.run(cmd);
 
     if (res.success) {
-      Logger.success('Restauration de la base de données terminée avec succès !');
+      Logger.success('Restauration de la base de donnees terminee avec succes !');
     } else {
       Logger.error('Erreur lors de la restauration :', res.stderr);
     }

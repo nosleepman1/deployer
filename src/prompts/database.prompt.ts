@@ -1,5 +1,5 @@
 /**
- * @fileoverview Module de saisie interactive pour la configuration de la base de données.
+ * @fileoverview Module de saisie interactive pour la configuration de la base de donnees.
  * @module prompts/database
  * @author AMBO Tech
  * @license MIT
@@ -10,22 +10,22 @@ import { DatabaseConfig, DatabaseType } from '../types/config';
 import { CryptoUtils } from '../utils/crypto';
 
 /**
- * Assistant interactif pour la configuration de la base de données relationnelle.
+ * Assistant interactif pour la configuration de la base de donnees relationnelle.
  */
 export class DatabasePrompt {
   /**
-   * Pose les questions de configuration et génère automatiquement les identifiants si demandé.
+   * Pose les questions de configuration et genere automatiquement les identifiants si demande.
    *
-   * @param {string} projectName - Nom du projet pour pré-remplir les noms de base par défaut.
-   * @returns {Promise<DatabaseConfig>} Configuration complète de la base de données.
+   * @param {string} projectName - Nom du projet pour pre-remplir les noms de base par defaut.
+   * @returns {Promise<DatabaseConfig>} Configuration complete de la base de donnees.
    */
   public static async prompt(projectName: string): Promise<DatabaseConfig> {
     const type = (await p.select({
-      message: '🗄️ Quel moteur de base de données souhaitez-vous déployer ?',
+      message: 'Quel moteur de base de donnees souhaitez-vous deployer ?',
       options: [
         {
           value: DatabaseType.POSTGRESQL,
-          label: 'PostgreSQL 16 (Recommandé avec Prisma & NestJS)',
+          label: 'PostgreSQL 16 (Recommande avec Prisma et NestJS)',
           hint: 'Hautes performances relationnelles, transactions robustes',
         },
         {
@@ -42,7 +42,7 @@ export class DatabasePrompt {
     const defaultUser = `${projectName.toLowerCase().replace(/[^a-z0-9]/g, '_')}_admin`;
 
     const dbName = await p.text({
-      message: 'Nom de la base de données :',
+      message: 'Nom de la base de donnees :',
       initialValue: defaultDbName,
       validate: (v) => (!v.trim() ? 'Le nom de base est requis.' : undefined),
     });
@@ -56,7 +56,7 @@ export class DatabasePrompt {
     if (p.isCancel(dbUser)) process.exit(0);
 
     const autoGenerate = await p.confirm({
-      message: 'Générer automatiquement un mot de passe sécurisé à haute entropie (48 hex chars) ?',
+      message: 'Generer automatiquement un mot de passe securise a haute entropie (48 hex chars) ?',
       initialValue: true,
     });
     if (p.isCancel(autoGenerate)) process.exit(0);
@@ -64,12 +64,12 @@ export class DatabasePrompt {
     let password = '';
     if (autoGenerate) {
       password = CryptoUtils.generateHexPassword(24);
-      p.log.info(`🔑 Mot de passe généré : ${password.substring(0, 8)}... (sauvegardé dans .env)`);
+      p.log.info(`Mot de passe genere : ${password.substring(0, 8)}... (sauvegarde dans .env)`);
     } else {
       const customPass = await p.password({
-        message: 'Saisissez votre mot de passe de base de données :',
-        mask: '•',
-        validate: (v) => (v.length < 8 ? 'Le mot de passe doit contenir au moins 8 caractères.' : undefined),
+        message: 'Saisissez votre mot de passe de base de donnees :',
+        mask: '*',
+        validate: (v) => (v.length < 8 ? 'Le mot de passe doit contenir au moins 8 caracteres.' : undefined),
       });
       if (p.isCancel(customPass)) process.exit(0);
       password = customPass as string;
@@ -78,7 +78,7 @@ export class DatabasePrompt {
     const port = type === DatabaseType.POSTGRESQL ? 5432 : 3306;
 
     const autoMigrate = await p.confirm({
-      message: 'Exécuter automatiquement les migrations Prisma / DB au démarrage du conteneur ?',
+      message: 'Executer automatiquement les migrations Prisma / DB au demarrage du conteneur ?',
       initialValue: true,
     });
     if (p.isCancel(autoMigrate)) process.exit(0);

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Gestionnaire d'automatisation des sauvegardes de base de données et planification Cron.
+ * @fileoverview Gestionnaire d'automatisation des sauvegardes de base de donnees et planification Cron.
  * @module system/backup
  * @author AMBO Tech
  * @license MIT
@@ -11,17 +11,17 @@ import { Logger } from '../utils/logger';
 import { DatabaseConfig } from '../types/config';
 
 /**
- * Gestionnaire pour la création de scripts de dump logique et l'enregistrement de tâches Crontab.
+ * Gestionnaire pour la creation de scripts de dump logique et l'enregistrement de taches Crontab.
  */
 export class BackupManager {
   /**
-   * Installe le script de sauvegarde PostgreSQL et enregistre la tâche planifiée Cron.
+   * Installe le script de sauvegarde PostgreSQL et enregistre la tache planifiee Cron.
    *
-   * @param {string} projectDir - Répertoire racine du projet contenant le dossier devops/scripts.
-   * @param {DatabaseConfig} db - Configuration de la base de données.
-   * @param {number} [hour=2] - Heure de déclenchement quotidienne (0 à 23).
-   * @param {number} [retentionDays=14] - Durée de conservation des fichiers en jours.
-   * @returns {Promise<boolean>} True si la planification s'est effectuée avec succès.
+   * @param {string} projectDir - Repertoire racine du projet contenant le dossier devops/scripts.
+   * @param {DatabaseConfig} db - Configuration de la base de donnees.
+   * @param {number} [hour=2] - Heure de declenchement quotidienne (0 a 23).
+   * @param {number} [retentionDays=14] - Duree de conservation des fichiers en jours.
+   * @returns {Promise<boolean>} True si la planification s'est effectuee avec succes.
    */
   public static async setupCron(
     projectDir: string,
@@ -29,7 +29,7 @@ export class BackupManager {
     hour: number = 2,
     retentionDays: number = 14
   ): Promise<boolean> {
-    Logger.info(`Mise en place de la sauvegarde automatique quotidienne (${hour}h00, rétention ${retentionDays}j)...`);
+    Logger.info(`Mise en place de la sauvegarde automatique quotidienne (${hour}h00, retention ${retentionDays}j)...`);
 
     const backupScriptDir = `${projectDir}/devops/scripts`;
     const backupScriptPath = `${backupScriptDir}/backup-db.sh`;
@@ -37,7 +37,7 @@ export class BackupManager {
     // 1. Contenu du script de sauvegarde bash universel
     const scriptContent = `#!/usr/bin/env bash
 # ==============================================================================
-# Script de Sauvegarde Automatisée — Généré par AMBO Deployer
+# Script de Sauvegarde Automatisee - Genere par AMBO Deployer
 # ==============================================================================
 set -e
 
@@ -51,23 +51,23 @@ RETENTION_DAYS=${retentionDays}
 mkdir -p "\${BACKUP_DIR}"
 BACKUP_FILE="\${BACKUP_DIR}/dump_\${DB_NAME}_\${TIMESTAMP}.sql.gz"
 
-echo "Démarrage du Dump PostgreSQL : \${DB_NAME} (\${TIMESTAMP})..."
+echo "Demarrage du Dump PostgreSQL : \${DB_NAME} (\${TIMESTAMP})..."
 docker exec -t "\${CONTAINER_NAME}" pg_dump -U "\${DB_USER}" -d "\${DB_NAME}" --clean --if-exists --no-owner --no-privileges | gzip -9 > "\${BACKUP_FILE}"
 
 if [ -f "\${BACKUP_FILE}" ] && [ -s "\${BACKUP_FILE}" ]; then
   FILE_SIZE=$(du -h "\${BACKUP_FILE}" | cut -f1)
-  echo "✅ Sauvegarde réussie : \${BACKUP_FILE} (\${FILE_SIZE})"
+  echo "[OK] Sauvegarde reussie : \${BACKUP_FILE} (\${FILE_SIZE})"
 else
-  echo "❌ Erreur : Le fichier de dump est vide !"
+  echo "[ERROR] Le fichier de dump est vide !"
   exit 1
 fi
 
-# Nettoyage des sauvegardes expirées
+# Nettoyage des sauvegardes expirees
 find "\${BACKUP_DIR}" -type f -name "dump_\${DB_NAME}_*.sql.gz" -mtime +\${RETENTION_DAYS} -delete
 `;
 
     try {
-      // 2. Création du dossier et écriture du script
+      // 2. Creation du dossier et ecriture du script
       await Shell.run(`mkdir -p ${backupScriptDir}`);
       fs.writeFileSync(backupScriptPath, scriptContent, { mode: 0o755 });
       await Shell.run(`chmod +x ${backupScriptPath}`);
@@ -85,7 +85,7 @@ find "\${BACKUP_DIR}" -type f -name "dump_\${DB_NAME}_*.sql.gz" -mtime +\${RETEN
         await Shell.run(`rm -f ${tempCronFile}`);
       }
 
-      Logger.success(`Tâche Cron de sauvegarde installée (toutes les nuits à ${hour}h00).`);
+      Logger.success(`Tache Cron de sauvegarde installee (toutes les nuits a ${hour}h00).`);
       return true;
     } catch (err: any) {
       Logger.error('Impossible d\'installer la sauvegarde automatique :', err);
@@ -94,21 +94,21 @@ find "\${BACKUP_DIR}" -type f -name "dump_\${DB_NAME}_*.sql.gz" -mtime +\${RETEN
   }
 
   /**
-   * Exécute une sauvegarde immédiate et synchrone de la base de données.
+   * Execute une sauvegarde immediate et synchrone de la base de donnees.
    *
-   * @param {string} projectDir - Répertoire racine du projet.
-   * @returns {Promise<boolean>} True si la sauvegarde manuelle s'est bien déroulée.
+   * @param {string} projectDir - Repertoire racine du projet.
+   * @returns {Promise<boolean>} True si la sauvegarde manuelle s'est bien deroulee.
    */
   public static async executeBackupNow(projectDir: string): Promise<boolean> {
     const backupScriptPath = `${projectDir}/devops/scripts/backup-db.sh`;
-    Logger.info('Lancement d\'une sauvegarde manuelle immédiate...');
+    Logger.info('Lancement d\'une sauvegarde manuelle immediate...');
     const res = await Shell.run(`bash ${backupScriptPath}`);
     if (res.success) {
-      Logger.success('Sauvegarde manuelle effectuée avec succès !');
+      Logger.success('Sauvegarde manuelle effectuee avec succes !');
       console.log(res.stdout);
       return true;
     } else {
-      Logger.error('Échec de la sauvegarde :', res.stderr);
+      Logger.error('Echec de la sauvegarde :', res.stderr);
       return false;
     }
   }

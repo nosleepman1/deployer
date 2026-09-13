@@ -13,19 +13,19 @@ import { SmsConfig, SmsProviderType } from '../types/config';
  */
 export class SmsPrompt {
   /**
-   * Pose les questions nécessaires selon le fournisseur de SMS sélectionné.
+   * Pose les questions necessaires selon le fournisseur de SMS selectionne.
    *
-   * @param {string} defaultSenderId - Sender ID par défaut suggéré.
-   * @returns {Promise<SmsConfig>} Configuration complète de la passerelle SMS.
+   * @param {string} defaultSenderId - Sender ID par defaut suggere.
+   * @returns {Promise<SmsConfig>} Configuration complete de la passerelle SMS.
    */
   public static async prompt(defaultSenderId: string = 'AFD_TEXTILE'): Promise<SmsConfig> {
     const provider = (await p.select({
-      message: '📱 Souhaitez-vous configurer l\'envoi de SMS (Codes OTP & alertes) ?',
+      message: 'Souhaitez-vous configurer l\'envoi de SMS (Codes OTP et alertes) ?',
       options: [
         {
           value: SmsProviderType.DEXCHANGE,
-          label: 'Dexchange SMS (Passerelle Sénégal & Zone UEMOA)',
-          hint: 'Recommandé pour les livraisons de SMS fiables au Sénégal (Orange, Wave, Free)',
+          label: 'Dexchange SMS (Passerelle Senegal et Zone UEMOA)',
+          hint: 'Recommande pour les livraisons de SMS fiables au Senegal (Orange, Wave, Free)',
         },
         {
           value: SmsProviderType.TWILIO,
@@ -34,8 +34,8 @@ export class SmsPrompt {
         },
         {
           value: SmsProviderType.DISABLED,
-          label: 'Désactiver les SMS (Mode développement ou ultérieur)',
-          hint: 'Les codes OTP seront simplement journalisés dans la console',
+          label: 'Desactiver les SMS (Mode developpement ou ulterieur)',
+          hint: 'Les codes OTP seront simplement journalises dans la console',
         },
       ],
     })) as SmsProviderType;
@@ -60,18 +60,18 @@ export class SmsPrompt {
       apiUrl = url as string;
 
       const key = await p.password({
-        message: 'Clé API Dexchange (API Key) :',
-        mask: '•',
-        validate: (v) => (!v.trim() ? 'La clé API est requise.' : undefined),
+        message: 'Cle API Dexchange (API Key) :',
+        mask: '*',
+        validate: (v) => (!v.trim() ? 'La cle API est requise.' : undefined),
       });
       if (p.isCancel(key)) process.exit(0);
       apiKey = (key as string).trim();
 
       const sender = await p.text({
-        message: 'Nom de l\'expéditeur (Sender ID max 11 caractères, ex: AFD_TEXTILE) :',
+        message: 'Nom de l\'expediteur (Sender ID max 11 caracteres, ex: AFD_TEXTILE) :',
         initialValue: defaultSenderId,
         validate: (v) => {
-          if (v.length > 11) return 'Le Sender ID ne doit pas dépasser 11 caractères.';
+          if (v.length > 11) return 'Le Sender ID ne doit pas depasser 11 caracteres.';
         },
       });
       if (p.isCancel(sender)) process.exit(0);
@@ -86,13 +86,13 @@ export class SmsPrompt {
 
       const token = await p.password({
         message: 'Twilio Auth Token :',
-        mask: '•',
+        mask: '*',
       });
       if (p.isCancel(token)) process.exit(0);
       apiKey = (token as string).trim();
 
       const sender = await p.text({
-        message: 'Numéro de téléphone Twilio ou Sender ID vérifié :',
+        message: 'Numero de telephone Twilio ou Sender ID verifie :',
         placeholder: '+1234567890 ou MON_ENTREPRISE',
       });
       if (p.isCancel(sender)) process.exit(0);

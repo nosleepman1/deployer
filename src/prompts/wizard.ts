@@ -1,5 +1,5 @@
 /**
- * @fileoverview Assistant interactif complet (Wizard) orchestrant toutes les étapes de configuration.
+ * @fileoverview Assistant interactif complet (Wizard) orchestrant toutes les etapes de configuration.
  * @module prompts/wizard
  * @author AMBO Tech
  * @license MIT
@@ -14,45 +14,45 @@ import { SmsPrompt } from './sms.prompt';
 import { DatabasePrompt } from './database.prompt';
 
 /**
- * Assistant principal guidant l'utilisateur à travers la saisie de tous les paramètres du serveur et de l'application.
+ * Assistant principal guidant l'utilisateur a travers la saisie de tous les parametres du serveur et de l'application.
  */
 export class WizardPrompt {
   /**
    * Lance le parcours interactif complet pour recueillir l'ensemble de la configuration du projet.
    *
-   * @param {Partial<DeploymentConfig>} [initialValues={}] - Valeurs par défaut optionnelles.
-   * @returns {Promise<DeploymentConfig>} Configuration de déploiement prête à l'emploi.
+   * @param {Partial<DeploymentConfig>} [initialValues={}] - Valeurs par defaut optionnelles.
+   * @returns {Promise<DeploymentConfig>} Configuration de deploiement prete a l'emploi.
    */
   public static async run(initialValues: Partial<DeploymentConfig> = {}): Promise<DeploymentConfig> {
-    p.intro('🚀 AMBO Tech — Assistant de Déploiement & Configuration VPS');
+    p.intro('AMBO Tech - Assistant de Deploiement et Configuration VPS');
 
-    // 1. Informations Générales sur le Projet
+    // 1. Informations Generales sur le Projet
     const projectName = await p.text({
-      message: '📌 Quel est le nom du projet applicatif ?',
+      message: 'Quel est le nom du projet applicatif ?',
       initialValue: initialValues.projectName || 'afd-textile',
       validate: (v) => (!v.trim() ? 'Le nom du projet est requis.' : undefined),
     });
     if (p.isCancel(projectName)) process.exit(0);
 
     const environment = (await p.select({
-      message: '🌍 Quel est l\'environnement de déploiement cible ?',
+      message: 'Quel est l\'environnement de deploiement cible ?',
       options: [
-        { value: 'production', label: 'Production (Optimisé, logs stricts, SSL HTTPS actif)' },
-        { value: 'staging', label: 'Staging / Recette (Tests préalables)' },
+        { value: 'production', label: 'Production (Optimise, logs stricts, SSL HTTPS actif)' },
+        { value: 'staging', label: 'Staging / Recette (Tests prealables)' },
       ],
       initialValue: initialValues.environment || 'production',
     })) as 'production' | 'staging';
     if (p.isCancel(environment)) process.exit(0);
 
     const targetDir = await p.text({
-      message: '📁 Quel est le répertoire d\'installation sur le serveur ?',
+      message: 'Quel est le repertoire d\'installation sur le serveur ?',
       initialValue: initialValues.targetDir || `/var/www/${(projectName as string).toLowerCase()}/backend`,
-      validate: (v) => (!v.trim() ? 'Le répertoire est requis.' : undefined),
+      validate: (v) => (!v.trim() ? 'Le repertoire est requis.' : undefined),
     });
     if (p.isCancel(targetDir)) process.exit(0);
 
     // 2. Nom de Domaine, Reverse Proxy & SSL
-    p.log.step('🌐 Configuration Réseau, Domaine & SSL');
+    p.log.step('Configuration Reseau, Domaine et SSL');
 
     const domainName = await p.text({
       message: 'Nom de domaine de l\'API (ex: api.mondomaine.sn) :',
@@ -62,7 +62,7 @@ export class WizardPrompt {
     if (p.isCancel(domainName)) process.exit(0);
 
     const corsInput = await p.text({
-      message: 'Domaines autorisés pour les requêtes CORS (séparés par une virgule) :',
+      message: 'Domaines autorises pour les requetes CORS (separes par une virgule) :',
       initialValue: initialValues.domain?.corsOrigins?.join(',') || `https://${projectName}.sn,https://app.${projectName}.sn`,
     });
     if (p.isCancel(corsInput)) process.exit(0);
@@ -82,14 +82,14 @@ export class WizardPrompt {
     if (p.isCancel(appPortInput)) process.exit(0);
     const appPort = parseInt(appPortInput as string, 10) || 3000;
 
-    // 3. Base de Données
-    p.log.step('🗄️ Configuration de la Base de Données');
+    // 3. Base de Donnees
+    p.log.step('Configuration de la Base de Donnees');
     const database = await DatabasePrompt.prompt(projectName as string);
 
-    // 4. Sécurité & Authentification JWT
-    p.log.step('🔐 Sécurité Cryptographique & Tokens JWT');
+    // 4. Securite & Authentification JWT
+    p.log.step('Securite Cryptographique et Tokens JWT');
     const autoJwt = await p.confirm({
-      message: 'Générer automatiquement des clés secrètes JWT ultra-sécurisées (HMAC 384 bits) ?',
+      message: 'Generer automatiquement des cles secretes JWT ultra-securisees (HMAC 384 bits) ?',
       initialValue: true,
     });
     if (p.isCancel(autoJwt)) process.exit(0);
@@ -100,7 +100,7 @@ export class WizardPrompt {
     if (autoJwt) {
       jwtAccessSecret = CryptoUtils.generateBase64Secret(48);
       jwtRefreshSecret = CryptoUtils.generateBase64Secret(48);
-      p.log.success('Clés JWT générées avec succès (Base64).');
+      p.log.success('Cles JWT generees avec succes (Base64).');
     } else {
       const accSec = await p.password({ message: 'JWT Access Secret :' });
       if (p.isCancel(accSec)) process.exit(0);
@@ -120,21 +120,21 @@ export class WizardPrompt {
     };
 
     // 5. Fournisseur d'Emails
-    p.log.step('📧 Configuration du Service d\'Emails (SMTP)');
-    const email = await EmailPrompt.prompt(`"Équipe ${projectName}" <noreply@${domainName}>`);
+    p.log.step('Configuration du Service d\'Emails (SMTP)');
+    const email = await EmailPrompt.prompt(`"Equipe ${projectName}" <noreply@${domainName}>`);
 
-    // 6. Stockage de Fichiers & Médias
-    p.log.step('☁️ Configuration du Stockage Médias (S3 / R2)');
+    // 6. Stockage de Fichiers & Medias
+    p.log.step('Configuration du Stockage Medias (S3 / R2)');
     const storage = await StoragePrompt.prompt(projectName as string);
 
     // 7. Passerelle SMS
-    p.log.step('📱 Configuration de la Passerelle SMS');
+    p.log.step('Configuration de la Passerelle SMS');
     const sms = await SmsPrompt.prompt((projectName as string).toUpperCase().replace(/[^A-Z0-9]/g, '_').substring(0, 11));
 
     // 8. GitHub Actions Runner Self-Hosted
-    p.log.step('🤖 Intégration Continue (GitHub Actions Runner)');
+    p.log.step('Integration Continue (GitHub Actions Runner)');
     const enableRunner = await p.confirm({
-      message: 'Voulez-vous connecter un Runner GitHub Actions Self-Hosted sur ce serveur (Zéro coût CI/CD) ?',
+      message: 'Voulez-vous connecter un Runner GitHub Actions Self-Hosted sur ce serveur (Zero cout CI/CD) ?',
       initialValue: false,
     });
     if (p.isCancel(enableRunner)) process.exit(0);
@@ -143,15 +143,15 @@ export class WizardPrompt {
 
     if (enableRunner) {
       const repoUrl = await p.text({
-        message: 'URL complète du dépôt GitHub :',
+        message: 'URL complete du depot GitHub :',
         placeholder: 'https://github.com/AMBO-tech/AFD-Textite-backend',
-        validate: (v) => (!v.startsWith('http') ? 'Veuillez saisir une URL de dépôt valide.' : undefined),
+        validate: (v) => (!v.startsWith('http') ? 'Veuillez saisir une URL de depot valide.' : undefined),
       });
       if (p.isCancel(repoUrl)) process.exit(0);
 
       const runnerToken = await p.password({
-        message: 'GitHub Runner Registration Token (copié depuis Settings > Actions > Runners) :',
-        mask: '•',
+        message: 'GitHub Runner Registration Token (copie depuis Settings > Actions > Runners) :',
+        mask: '*',
         validate: (v) => (!v.trim() ? 'Le token GitHub Runner est requis.' : undefined),
       });
       if (p.isCancel(runnerToken)) process.exit(0);
@@ -164,7 +164,7 @@ export class WizardPrompt {
       };
     }
 
-    // 9. Paramètres Système et Sauvegardes
+    // 9. Parametres Systeme et Sauvegardes
     const swapSizeGb = 2;
     const backupHour = 2; // 02h00
     const backupRetentionDays = 14;
@@ -190,7 +190,7 @@ export class WizardPrompt {
       backupRetentionDays,
     };
 
-    p.outro('✔ Configuration recueillie avec succès !');
+    p.outro('Configuration recueillie avec succes !');
 
     return config;
   }

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Point d'entrée principal de l'interface en ligne de commande (CLI) AMBO Deployer.
+ * @fileoverview Point d'entree principal de l'interface en ligne de commande (CLI) AMBO Deployer.
  * @module index
  * @author AMBO Tech
  * @license MIT
@@ -17,32 +17,32 @@ const program = new Command();
 
 program
   .name('deployer')
-  .description('🚀 CLI Interactif Universel de Provisioning de VPS et Déploiement Docker (AMBO Tech)')
+  .description('CLI Interactif Universel de Provisioning de VPS et Deploiement Docker (AMBO Tech)')
   .version('1.0.0');
 
 // 1. Commande Init (Parcours Complet)
 program
   .command('init')
-  .description('Provisionne entièrement un VPS et déploie l\'application de façon interactive')
+  .description('Provisionne entierement un VPS et deploie l\'application de facon interactive')
   .option('-c, --config <path>', 'Chemin vers un fichier de configuration JSON existant')
-  .option('-d, --dry-run', 'Simule les commandes système sans les exécuter')
+  .option('-d, --dry-run', 'Simule les commandes systeme sans les executer')
   .action(async (options) => {
     await InitCommand.execute(options);
   });
 
-// 2. Commande Doctor (Diagnostic & Santé)
+// 2. Commande Doctor (Diagnostic & Sante)
 program
   .command('doctor')
-  .description('Audite l\'état de santé du système hôte, de Docker, de la RAM et de Nginx')
+  .description('Audite l\'etat de sante du systeme hote, de Docker, de la RAM et de Nginx')
   .action(async () => {
     await DoctorCommand.execute();
   });
 
-// 3. Commande Backup (Sauvegarde Immédiate)
+// 3. Commande Backup (Sauvegarde Immediate)
 program
   .command('backup')
-  .description('Déclenche une sauvegarde logique immédiate de la base de données')
-  .option('-p, --path <path>', 'Répertoire du projet', '/var/www/afd-textile/backend')
+  .description('Declenche une sauvegarde logique immediate de la base de donnees')
+  .option('-p, --path <path>', 'Repertoire du projet', '/var/www/afd-textile/backend')
   .action(async (options) => {
     await BackupCommand.execute(options.path);
   });
@@ -50,9 +50,9 @@ program
 // 4. Commande Restore (Restauration)
 program
   .command('restore <dumpFile>')
-  .description('Restaure un fichier de dump .sql.gz dans la base de données PostgreSQL')
+  .description('Restaure un fichier de dump .sql.gz dans la base de donnees PostgreSQL')
   .option('-c, --container <name>', 'Nom du conteneur Docker', 'afd_postgres_prod')
-  .option('-d, --db <name>', 'Nom de la base de données', 'afd_textile_prod')
+  .option('-d, --db <name>', 'Nom de la base de donnees', 'afd_textile_prod')
   .option('-u, --user <name>', 'Nom de l\'utilisateur administrateur', 'afd_admin')
   .action(async (dumpFile, options) => {
     await RestoreCommand.execute(dumpFile, options.container, options.db, options.user);
@@ -62,16 +62,16 @@ program
 program
   .command('runner')
   .description('Installe et connecte un Runner GitHub Actions Self-Hosted sur ce serveur')
-  .option('-u, --url <url>', 'URL du dépôt GitHub')
+  .option('-u, --url <url>', 'URL du depot GitHub')
   .option('-t, --token <token>', 'Jeton d\'enregistrement du runner')
   .action(async (options) => {
     await RunnerCommand.execute(options);
   });
 
-// Exécution de l'analyse des arguments
+// Execution de l'analyse des arguments
 program.parse(process.argv);
 
-// Si aucune commande n'est passée, afficher l'aide
+// Si aucune commande n'est passee, afficher l'aide
 if (!process.argv.slice(2).length) {
   program.outputHelp();
 }

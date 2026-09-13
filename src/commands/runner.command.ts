@@ -1,5 +1,5 @@
 /**
- * @fileoverview Commande 'runner' pour enregistrer et configurer un GitHub Runner Self-Hosted de manière autonome.
+ * @fileoverview Commande 'runner' pour enregistrer et configurer un GitHub Runner Self-Hosted de maniere autonome.
  * @module commands/runner
  * @author AMBO Tech
  * @license MIT
@@ -17,20 +17,20 @@ export class RunnerCommand {
    * Lance l'assistant interactif de configuration du Runner.
    *
    * @param {Object} [options={}] - Options de ligne de commande.
-   * @param {string} [options.url] - URL du dépôt GitHub.
+   * @param {string} [options.url] - URL du depot GitHub.
    * @param {string} [options.token] - Jeton d'enregistrement GitHub Actions.
    * @returns {Promise<void>}
    */
   public static async execute(options: { url?: string; token?: string } = {}): Promise<void> {
     Logger.banner();
-    Logger.section('🤖 Configuration du Runner GitHub Actions Self-Hosted');
+    Logger.section('Configuration du Runner GitHub Actions Self-Hosted');
 
     let repoUrl = options.url;
     let runnerToken = options.token;
 
     if (!repoUrl) {
       const urlInput = await p.text({
-        message: 'URL complète du dépôt GitHub cible :',
+        message: 'URL complete du depot GitHub cible :',
         placeholder: 'https://github.com/AMBO-tech/AFD-Textite-backend',
         validate: (v) => (!v.startsWith('http') ? 'Veuillez renseigner une URL valide.' : undefined),
       });
@@ -41,7 +41,7 @@ export class RunnerCommand {
     if (!runnerToken) {
       const tokenInput = await p.password({
         message: 'Jeton d\'enregistrement GitHub (Settings > Actions > Runners > New runner) :',
-        mask: '•',
+        mask: '*',
         validate: (v) => (!v.trim() ? 'Le jeton d\'enregistrement est obligatoire.' : undefined),
       });
       if (p.isCancel(tokenInput)) process.exit(0);

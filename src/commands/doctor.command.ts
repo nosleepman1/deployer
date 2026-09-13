@@ -1,5 +1,5 @@
 /**
- * @fileoverview Commande 'doctor' pour auditer et diagnostiquer l'état de santé du serveur et des conteneurs.
+ * @fileoverview Commande 'doctor' pour auditer et diagnostiquer l'etat de sante du serveur et des conteneurs.
  * @module commands/doctor
  * @author AMBO Tech
  * @license MIT
@@ -14,39 +14,39 @@ import { Logger } from '../utils/logger';
 import chalk from 'chalk';
 
 /**
- * Gestionnaire d'audit de santé du serveur.
+ * Gestionnaire d'audit de sante du serveur.
  */
 export class DoctorCommand {
   /**
-   * Analyse l'ensemble des composants système et affiche un bilan visuel clair.
+   * Analyse l'ensemble des composants systeme et affiche un bilan visuel clair.
    *
    * @returns {Promise<void>}
    */
   public static async execute(): Promise<void> {
     Logger.banner();
-    Logger.section('🩺 Audit de Santé Système (AMBO Doctor)');
+    Logger.section('Audit de Sante Systeme (AMBO Doctor)');
 
-    // 1. Système d'exploitation et ressources matérielles
+    // 1. Systeme d'exploitation et ressources materielles
     const sysInfo = await OsDetect.getSystemInfo();
-    console.log(chalk.bold('Système d\'exploitation :'));
-    console.log(`  • OS / Distro    : ${sysInfo.distro} ${sysInfo.release} (${sysInfo.platform}/${sysInfo.arch})`);
-    console.log(`  • CPU Cores      : ${sysInfo.cpuCores}`);
-    console.log(`  • Mémoire RAM    : ${sysInfo.freeMemMb} Mo libres / ${sysInfo.totalMemMb} Mo totaux`);
+    console.log(chalk.bold('Systeme d\'exploitation :'));
+    console.log(`  - OS / Distro    : ${sysInfo.distro} ${sysInfo.release} (${sysInfo.platform}/${sysInfo.arch})`);
+    console.log(`  - CPU Cores      : ${sysInfo.cpuCores}`);
+    console.log(`  - Memoire RAM    : ${sysInfo.freeMemMb} Mo libres / ${sysInfo.totalMemMb} Mo totaux`);
 
-    // 2. Mémoire Swap
+    // 2. Memoire Swap
     const hasSwap = await SwapManager.hasActiveSwap();
     console.log();
-    console.log(chalk.bold('Mémoire Virtuelle (Swap) :'));
+    console.log(chalk.bold('Memoire Virtuelle (Swap) :'));
     if (hasSwap) {
       const swapDetails = await Shell.run('free -h | grep -i swap', { silent: true });
-      console.log(chalk.green(`  ✔ Swap actif : ${swapDetails.stdout || 'Activé'}`));
+      console.log(chalk.green(`  [OK] Swap actif : ${swapDetails.stdout || 'Active'}`));
     } else {
-      console.log(chalk.yellow('  ⚠ Aucun Swap actif (risque de crash OOM sous forte charge).'));
+      console.log(chalk.yellow('  [WARN] Aucun Swap actif (risque de saturation memoire sous forte charge).'));
     }
 
     // 3. Pare-feu UFW
     console.log();
-    console.log(chalk.bold('Sécurité & Pare-feu (UFW) :'));
+    console.log(chalk.bold('Securite et Pare-feu (UFW) :'));
     const ufwStatus = await FirewallManager.getStatus();
     console.log(`  ${ufwStatus.split('\n').join('\n  ')}`);
 
@@ -57,32 +57,32 @@ export class DoctorCommand {
     if (dockerInstalled) {
       const dockerVer = await Shell.run('docker --version', { silent: true });
       const composeVer = await Shell.run('docker compose version', { silent: true });
-      console.log(chalk.green(`  ✔ ${dockerVer.stdout}`));
-      console.log(chalk.green(`  ✔ ${composeVer.stdout}`));
+      console.log(chalk.green(`  [OK] ${dockerVer.stdout}`));
+      console.log(chalk.green(`  [OK] ${composeVer.stdout}`));
 
-      // Liste des conteneurs en cours d'exécution
+      // Liste des conteneurs en cours d'execution
       const psRes = await Shell.run('docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"', { silent: true });
       if (psRes.success && psRes.stdout) {
         console.log();
-        console.log(chalk.bold('Conteneurs en cours d\'exécution :'));
+        console.log(chalk.bold('Conteneurs en cours d\'execution :'));
         console.log(psRes.stdout);
       }
     } else {
-      console.log(chalk.red('  ✖ Docker n\'est pas installé sur ce serveur.'));
+      console.log(chalk.red('  [ERROR] Docker n\'est pas installe sur ce serveur.'));
     }
 
-    // 5. Nginx & Ports Réseau
+    // 5. Nginx & Ports Reseau
     console.log();
     console.log(chalk.bold('Serveur Web Nginx :'));
     const hasNginx = await Shell.hasCommand('nginx');
     if (hasNginx) {
       const nginxVer = await Shell.run('nginx -v', { silent: true });
-      console.log(chalk.green(`  ✔ ${nginxVer.stderr || nginxVer.stdout || 'Nginx actif'}`));
+      console.log(chalk.green(`  [OK] ${nginxVer.stderr || nginxVer.stdout || 'Nginx actif'}`));
     } else {
-      console.log(chalk.yellow('  ⚠ Nginx n\'est pas installé.'));
+      console.log(chalk.yellow('  [WARN] Nginx n\'est pas installe.'));
     }
 
     console.log();
-    Logger.success('Diagnostic de santé terminé.');
+    Logger.success('Diagnostic de sante termine.');
   }
 }

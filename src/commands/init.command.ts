@@ -1,5 +1,5 @@
 /**
- * @fileoverview Commande principale 'init' pour provisionner le VPS et déployer l'application de bout en bout.
+ * @fileoverview Commande principale 'init' pour provisionner le VPS et deployer l'application de bout en bout.
  * @module commands/init
  * @author AMBO Tech
  * @license MIT
@@ -22,15 +22,15 @@ import { Shell } from '../utils/shell';
 import { DeploymentConfig } from '../types/config';
 
 /**
- * Gestionnaire d'exécution de la commande d'initialisation complète `deployer init`.
+ * Gestionnaire d'execution de la commande d'initialisation complete 'deployer init'.
  */
 export class InitCommand {
   /**
-   * Exécute le provisionnement interactif complet du serveur VPS.
+   * Execute le provisionnement interactif complet du serveur VPS.
    *
-   * @param {Object} [options={}] - Options de ligne de commande passées via Commander.
-   * @param {boolean} [options.dryRun] - Si true, simule les opérations sans altérer le serveur.
-   * @param {string} [options.config] - Chemin vers un fichier de configuration JSON pré-rempli.
+   * @param {Object} [options={}] - Options de ligne de commande passees via Commander.
+   * @param {boolean} [options.dryRun] - Si true, simule les operations sans alterer le serveur.
+   * @param {string} [options.config] - Chemin vers un fichier de configuration JSON pre-rempli.
    * @returns {Promise<void>}
    */
   public static async execute(options: { dryRun?: boolean; config?: string } = {}): Promise<void> {
@@ -48,27 +48,27 @@ export class InitCommand {
 
     const s = p.spinner();
 
-    // Étape 1 : Swap de 2 Go
-    Logger.section('Étape 1/7 : Mémoire Virtuelle (Swap)');
-    s.start('Configuration de l\'espace Swap de sécurité (2 Go)...');
+    // Etape 1 : Swap de 2 Go
+    Logger.section('Etape 1/7 : Memoire Virtuelle (Swap)');
+    s.start('Configuration de l\'espace Swap de securite (2 Go)...');
     await SwapManager.setupSwap(config.swapSizeGb);
-    s.stop('✔ Espace Swap configuré avec succès.');
+    s.stop('[OK] Espace Swap configure avec succes.');
 
-    // Étape 2 : Pare-feu UFW
-    Logger.section('Étape 2/7 : Pare-feu Réseau (UFW)');
-    s.start('Application des règles de sécurité pare-feu...');
+    // Etape 2 : Pare-feu UFW
+    Logger.section('Etape 2/7 : Pare-feu Reseau (UFW)');
+    s.start('Application des regles de securite pare-feu...');
     await FirewallManager.setupFirewall();
-    s.stop('✔ Pare-feu UFW configuré et activé (Ports 22, 80, 443).');
+    s.stop('[OK] Pare-feu UFW configure et active (Ports 22, 80, 443).');
 
-    // Étape 3 : Installation de Docker & Docker Compose
-    Logger.section('Étape 3/7 : Moteur Docker & Compose');
-    s.start('Vérification et installation de Docker Engine officiel...');
+    // Etape 3 : Installation de Docker & Docker Compose
+    Logger.section('Etape 3/7 : Moteur Docker & Compose');
+    s.start('Verification et installation de Docker Engine officiel...');
     await DockerManager.installDocker();
-    s.stop('✔ Docker Engine & Docker Compose opérationnels.');
+    s.stop('[OK] Docker Engine et Docker Compose operationnels.');
 
-    // Étape 4 : Fichier .env & Permissions
-    Logger.section('Étape 4/7 : Génération du fichier .env sécurisé');
-    s.start('Écriture du fichier .env avec clés cryptographiques...');
+    // Etape 4 : Fichier .env & Permissions
+    Logger.section('Etape 4/7 : Generation du fichier .env securise');
+    s.start('Ecriture du fichier .env avec cles cryptographiques...');
     const projectDir = path.resolve(config.targetDir);
     await Shell.run(`mkdir -p ${projectDir}`);
 
@@ -77,63 +77,63 @@ export class InitCommand {
     fs.writeFileSync(envPath, envContent, 'utf-8');
     await Shell.run(`chmod 600 ${envPath}`);
 
-    // Sauvegarde optionnelle du profil JSON pour rejouabilité
+    // Sauvegarde optionnelle du profil JSON pour rejouabilite
     const configProfilePath = path.join(projectDir, 'deployer.config.json');
     fs.writeFileSync(configProfilePath, JSON.stringify(config, null, 2), 'utf-8');
     await Shell.run(`chmod 600 ${configProfilePath}`);
-    s.stop(`✔ Fichier .env généré dans ${envPath} (droits 600 verrouillés).`);
+    s.stop(`[OK] Fichier .env genere dans ${envPath} (droits 600 verrouilles).`);
 
-    // Étape 5 : Reverse Proxy Nginx & Certificat SSL
-    Logger.section('Étape 5/7 : Nginx Reverse Proxy & SSL Let\'s Encrypt');
+    // Etape 5 : Reverse Proxy Nginx & Certificat SSL
+    Logger.section('Etape 5/7 : Nginx Reverse Proxy et SSL Let\'s Encrypt');
     s.start(`Configuration du VirtualHost Nginx pour ${config.domain.domainName}...`);
     const nginxOk = await NginxManager.configureSite(config.projectName, config.domain);
     if (nginxOk) {
-      s.stop('✔ VirtualHost Nginx activé.');
-      s.start(`Génération du certificat SSL HTTPS pour ${config.domain.domainName}...`);
+      s.stop('[OK] VirtualHost Nginx active.');
+      s.start(`Generation du certificat SSL HTTPS pour ${config.domain.domainName}...`);
       await SslManager.obtainCertificate(config.domain.domainName, config.domain.sslEmail);
-      s.stop('✔ Certificat SSL Let\'s Encrypt délivré et actif.');
+      s.stop('[OK] Certificat SSL Let\'s Encrypt delivre et actif.');
     } else {
-      s.stop('⚠ Nginx n\'a pas pu être totalement configuré (vérifiez les logs).');
+      s.stop('[WARN] Nginx n\'a pas pu etre totalement configure (verifiez les logs).');
     }
 
-    // Étape 6 : Sauvegardes Automatiques Quotidiennes
-    Logger.section('Étape 6/7 : Sauvegardes Quotidiennes de la Base');
-    s.start('Installation du script de dump et de la tâche Cron...');
+    // Etape 6 : Sauvegardes Automatiques Quotidiennes
+    Logger.section('Etape 6/7 : Sauvegardes Quotidiennes de la Base');
+    s.start('Installation du script de dump et de la tache Cron...');
     await BackupManager.setupCron(projectDir, config.database, config.backupHour, config.backupRetentionDays);
-    s.stop(`✔ Sauvegarde programmée chaque nuit à ${config.backupHour}h00 (rétention ${config.backupRetentionDays} jours).`);
+    s.stop(`[OK] Sauvegarde programmee chaque nuit a ${config.backupHour}h00 (retention ${config.backupRetentionDays} jours).`);
 
-    // Étape 7 : Démarrage des Conteneurs Docker
-    Logger.section('Étape 7/7 : Démarrage de la Stack Applicative');
-    s.start('Construction des images Docker et démarrage des conteneurs...');
+    // Etape 7 : Demarrage des Conteneurs Docker
+    Logger.section('Etape 7/7 : Demarrage de la Stack Applicative');
+    s.start('Construction des images Docker et demarrage des conteneurs...');
     const composeFile = fs.existsSync(path.join(projectDir, 'docker-compose.prod.yml'))
       ? 'docker-compose.prod.yml'
       : 'docker-compose.yml';
 
     const upOk = await DockerManager.composeUp(composeFile, projectDir);
     if (upOk) {
-      s.stop('✔ Conteneurs démarrés avec succès.');
+      s.stop('[OK] Conteneurs demarres avec succes.');
     } else {
-      s.stop('⚠ Un problème est survenu lors du lancement des conteneurs.');
+      s.stop('[WARN] Un probleme est survenu lors du lancement des conteneurs.');
     }
 
-    // Étape Bonus : GitHub Actions Runner
+    // Etape Bonus : GitHub Actions Runner
     if (config.runner.enabled) {
       Logger.section('Bonus : Runner GitHub Actions Self-Hosted');
-      s.start('Connexion du Runner auprès du dépôt GitHub...');
+      s.start('Connexion du Runner aupres du depot GitHub...');
       await RunnerManager.setupRunner(config.runner);
-      s.stop('✔ Runner GitHub Actions connecté et prêt.');
+      s.stop('[OK] Runner GitHub Actions connecte et pret.');
     }
 
     // Rapport Final
     console.log();
     p.note(
-      `🌐 Domaine API : https://${config.domain.domainName}\n` +
-      `🗄️ Base de données : ${config.database.name} (PostgreSQL 16)\n` +
-      `📁 Emplacement : ${projectDir}\n` +
-      `🛡️ SSL HTTPS : Let's Encrypt (Actif)\n` +
-      `💾 Sauvegardes : /var/backups/afd-textile (Chaque nuit à ${config.backupHour}h00)\n` +
-      `🤖 CI/CD : ${config.runner.enabled ? 'Runner GitHub Self-Hosted actif' : 'Manuel'}`,
-      '🎉 DÉPLOIEMENT TERMINÉ AVEC SUCCÈS !'
+      `Domaine API : https://${config.domain.domainName}\n` +
+      `Base de donnees : ${config.database.name} (PostgreSQL 16)\n` +
+      `Emplacement : ${projectDir}\n` +
+      `SSL HTTPS : Let's Encrypt (Actif)\n` +
+      `Sauvegardes : /var/backups/afd-textile (Chaque nuit a ${config.backupHour}h00)\n` +
+      `CI/CD : ${config.runner.enabled ? 'Runner GitHub Self-Hosted actif' : 'Manuel'}`,
+      'DEPLOIEMENT TERMINE AVEC SUCCES !'
     );
   }
 }

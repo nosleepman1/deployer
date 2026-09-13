@@ -13,19 +13,19 @@ import { StorageConfig, StorageProviderType } from '../types/config';
  */
 export class StoragePrompt {
   /**
-   * Pose les questions nécessaires selon le fournisseur de stockage sélectionné.
+   * Pose les questions necessaires selon le fournisseur de stockage selectionne.
    *
-   * @param {string} projectName - Nom du projet pour les préfixes de bucket par défaut.
-   * @returns {Promise<StorageConfig>} Configuration complète du stockage d'objets.
+   * @param {string} projectName - Nom du projet pour les prefixes de bucket par defaut.
+   * @returns {Promise<StorageConfig>} Configuration complete du stockage d'objets.
    */
   public static async prompt(projectName: string): Promise<StorageConfig> {
     const provider = (await p.select({
-      message: '☁️ Quel système de stockage d\'objets / médias souhaitez-vous utiliser ?',
+      message: 'Quel systeme de stockage d\'objets / medias souhaitez-vous utiliser ?',
       options: [
         {
           value: StorageProviderType.CLOUDFLARE_R2,
-          label: 'Cloudflare R2 (Recommandé — 0€ de frais de bande passante)',
-          hint: 'Compatible API S3, rapide et économique',
+          label: 'Cloudflare R2 (Recommande - 0 EUR de frais de bande passante)',
+          hint: 'Compatible API S3, rapide et economique',
         },
         {
           value: StorageProviderType.AWS_S3,
@@ -77,13 +77,13 @@ export class StoragePrompt {
 
       const secretKey = await p.password({
         message: 'R2 Secret Access Key :',
-        mask: '•',
+        mask: '*',
       });
       if (p.isCancel(secretKey)) process.exit(0);
       secretAccessKey = (secretKey as string).trim();
 
       const pubDom = await p.text({
-        message: 'Nom de domaine public R2 (ou domaine personnalisé Cloudflare) :',
+        message: 'Nom de domaine public R2 (ou domaine personnalise Cloudflare) :',
         placeholder: `https://media.${projectName.toLowerCase()}.sn`,
         initialValue: `https://media.${projectName.toLowerCase()}.sn`,
       });
@@ -91,7 +91,7 @@ export class StoragePrompt {
       publicDomain = pubDom as string;
     } else if (provider === StorageProviderType.AWS_S3) {
       const reg = await p.text({
-        message: 'Région AWS S3 (ex: eu-west-3 pour Paris) :',
+        message: 'Region AWS S3 (ex: eu-west-3 pour Paris) :',
         initialValue: 'eu-west-3',
       });
       if (p.isCancel(reg)) process.exit(0);
@@ -113,7 +113,7 @@ export class StoragePrompt {
 
       const secretKey = await p.password({
         message: 'AWS Secret Access Key :',
-        mask: '•',
+        mask: '*',
       });
       if (p.isCancel(secretKey)) process.exit(0);
       secretAccessKey = (secretKey as string).trim();
