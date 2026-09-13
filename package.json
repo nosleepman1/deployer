@@ -1,0 +1,62 @@
+{
+  "name": "@nosleepman1/deployer",
+  "version": "1.0.0",
+  "description": "CLI interactif universel de provisioning de VPS et déploiement Docker avec support multi-providers (Gmail, OVH, Cloudflare R2, Dexchange SMS)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "deployer": "./bin/deployer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nosleepman1/deployer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nosleepman1/deployer/issues"
+  },
+  "homepage": "https://github.com/nosleepman1/deployer#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "start": "node bin/deployer.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": [
+    "devops",
+    "vps",
+    "deployment",
+    "docker",
+    "cli",
+    "provisioner",
+    "nginx",
+    "letsencrypt",
+    "ssl"
+  ],
+  "author": "AMBO Tech",
+  "license": "MIT",
+  "dependencies": {
+    "@clack/prompts": "^0.8.2",
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
