@@ -1,11 +1,11 @@
 {
-  "name": "@nosleepman1/deployer",
+  "name": "@nosleepman/deployer",
   "version": "1.0.0",
   "description": "CLI interactif universel de provisioning de VPS et déploiement Docker avec support multi-providers (Gmail, OVH, Cloudflare R2, Dexchange SMS)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "deployer": "./bin/deployer.js"
+    "deployer": "bin/deployer.js"
   },
   "repository": {
     "type": "git",

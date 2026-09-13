@@ -38,7 +38,7 @@ export class UpdateCommand {
    * @param {string} packageName - Nom du package sur NPM.
    * @returns {Promise<string | null>} Derniere version distante disponible ou null.
    */
-  public static async getLatestNpmVersion(packageName: string = '@nosleepman1/deployer'): Promise<string | null> {
+  public static async getLatestNpmVersion(packageName: string = '@nosleepman/deployer'): Promise<string | null> {
     const res = await Shell.run(`npm show ${packageName} version`, { silent: true });
     if (res.success && res.stdout) {
       return res.stdout.trim();
@@ -66,7 +66,7 @@ export class UpdateCommand {
       Logger.info('Telechargement et mise a jour en cours...');
 
       // 1. Tenter la mise a jour via npm global
-      const npmUpdateRes = await Shell.run('npm install -g @nosleepman1/deployer@latest');
+      const npmUpdateRes = await Shell.run('npm install -g @nosleepman/deployer@latest');
       if (npmUpdateRes.success) {
         Logger.success(`AMBO Deployer mis a jour avec succes vers la version v${latestVersion} !`);
         return;
