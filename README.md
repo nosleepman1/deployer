@@ -90,8 +90,39 @@ deployer backup
 # 5. Restaurer une sauvegarde existante
 deployer restore /var/backups/afd-textile/dump_afd_textile_prod_2026-09-13.sql.gz
 
-# 6. Connecter ou reenregistrer un Runner GitHub Actions Self-Hosted
+# 6. Mettre a jour automatiquement le CLI vers la derniere version
+deployer update
+
+# 7. Connecter ou reenregistrer un Runner GitHub Actions Self-Hosted
 deployer runner
+```
+
+---
+
+## Gestion des Releases et Mises a Jour (Zero Frais GitHub)
+
+Pour eviter tout probleme de facturation GitHub Actions (*GitHub Billing*), les publications NPM et les mises a jour peuvent se faire :
+
+### Option A : Publication Directe en 1 Commande (Depuis votre machine)
+```bash
+# Pour un correctif de bug (1.0.0 -> 1.0.1)
+npm run release:patch
+
+# Pour une nouvelle fonctionnalite (1.0.0 -> 1.1.0)
+npm run release:minor
+
+# Pour une version majeure (1.0.0 -> 2.0.0)
+npm run release:major
+```
+*Cette commande unique incremente la version, compile le TypeScript, publie sur NPM, cree le tag Git et le pousse sur GitHub automatiquement.*
+
+### Option B : Publication via GitHub Actions Self-Hosted
+Le workflow `.github/workflows/publish.yml` est configure pour tourner exclusivement sur votre propre runner (`runs-on: [self-hosted]`), ce qui garantit **0 EUR de couts GitHub Actions**.
+
+### Option C : Mise a Jour Automatique du CLI
+Sur n'importe quel serveur ou machine cliente, tapez simplement :
+```bash
+deployer update
 ```
 
 ---

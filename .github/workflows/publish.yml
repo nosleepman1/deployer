@@ -1,4 +1,4 @@
-name: Publish Package to NPM
+name: Publish Package to NPM (Self-Hosted)
 
 on:
   release:
@@ -7,16 +7,15 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    name: Build & Publish to NPM
+    runs-on: [self-hosted]
     steps:
       - name: Recuperation du code source
         uses: actions/checkout@v4
 
-      - name: Configuration de Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
+      - name: Configuration du token NPM
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
       - name: Installation des dependances
         run: npm ci
@@ -26,5 +25,3 @@ jobs:
 
       - name: Publication sur le registre NPM
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

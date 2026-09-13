@@ -11,6 +11,7 @@ import { DoctorCommand } from './commands/doctor.command';
 import { BackupCommand } from './commands/backup.command';
 import { RestoreCommand } from './commands/restore.command';
 import { RunnerCommand } from './commands/runner.command';
+import { UpdateCommand } from './commands/update.command';
 
 /** Instance principale du programme Commander */
 const program = new Command();
@@ -18,7 +19,7 @@ const program = new Command();
 program
   .name('deployer')
   .description('CLI Interactif Universel de Provisioning de VPS et Deploiement Docker (AMBO Tech)')
-  .version('1.0.0');
+  .version(UpdateCommand.getCurrentVersion());
 
 // 1. Commande Init (Parcours Complet)
 program
@@ -66,6 +67,14 @@ program
   .option('-t, --token <token>', 'Jeton d\'enregistrement du runner')
   .action(async (options) => {
     await RunnerCommand.execute(options);
+  });
+
+// 6. Commande Update (Mise a jour automatique du CLI)
+program
+  .command('update')
+  .description('Verifie et met a jour automatiquement le CLI vers la derniere version disponible')
+  .action(async () => {
+    await UpdateCommand.execute();
   });
 
 // Execution de l'analyse des arguments
