@@ -30,9 +30,9 @@
     "prepublishOnly": "npm run build",
     "start": "node bin/deployer.js",
     "dev": "ts-node src/index.ts",
-    "release:patch": "npm version patch && npm publish && git push --follow-tags",
-    "release:minor": "npm version minor && npm publish && git push --follow-tags",
-    "release:major": "npm version major && npm publish && git push --follow-tags"
+    "release:patch": "npm version patch && git push --follow-tags",
+    "release:minor": "npm version minor && git push --follow-tags",
+    "release:major": "npm version major && git push --follow-tags"
   },
   "keywords": [
     "devops",
